@@ -30,7 +30,6 @@ def main():
     elif detection_method == "Live Video":
         st.sidebar.subheader("Live Video Face Detection")
         available_camera = None
-        # Try different camera indices to identify the available one
         for i in range(4):
             video_stream = cv2.VideoCapture(i)
             if video_stream.isOpened():
