@@ -1,39 +1,28 @@
 import cv2
 import streamlit as st
-from PIL import Image as PILImage
 import numpy as np
 
 def detect_faces(image):
-    # Your face detection logic here...
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+    for (x, y, w, h) in faces:
+        cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
     return image
 
 def main():
     st.title("Face Detection with Streamlit")
 
-    st.sidebar.header("Select Detection Method")
-    detection_method = st.sidebar.radio("Choose Detection Method", ("Image", "Pre-recorded Video"))
+    video_capture = cv2.VideoCapture(0)
 
-    if detection_method == "Image":
-        # Your image upload logic...
-        pass
-
-    elif detection_method == "Pre-recorded Video":
-        st.sidebar.subheader("Pre-recorded Video Face Detection")
-        video_file = st.sidebar.file_uploader("Choose a video file...", type=["mp4"])  # Allow only MP4 videos
-
-        if video_file is not None:
-            video_bytes = video_file.read()
-            cap = cv2.VideoCapture(video_bytes)
-
-            stframe = st.empty()
-
-            while True:
-                ret, frame = cap.read()
-                if not ret:
-                    break
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                result_img = detect_faces(frame)
-                stframe.image(result_img, caption='Pre-recorded Video Face Detection', channels="RGB", use_column_width=True)
+    while True:
+        ret, frame = video_capture.read()
+        if not ret:
+            st.error("Failed to access the camera.")
+            break
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        result_img = detect_faces(frame)
+        st.image(result_img, caption='Live Video Face Detection', channels="BGR", use_column_width=True)
 
 if __name__ == '__main__':
     main()
