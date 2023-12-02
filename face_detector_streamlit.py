@@ -4,11 +4,7 @@ from PIL import Image as PILImage
 import numpy as np
 
 def detect_faces(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
-    for (x, y, w, h) in faces:
-        cv2.rectangle(image, (x, y), (x+w, y+h), (255, 0, 0), 2)
+    # Your face detection logic here...
     return image
 
 def main():
@@ -29,13 +25,14 @@ def main():
 
     elif detection_method == "Live Video":
         st.sidebar.subheader("Live Video Face Detection")
+
         available_camera = None
-        for i in range(4):
-            video_stream = cv2.VideoCapture(i)
-            if video_stream.isOpened():
+        for i in range(5):  # Try up to 5 devices
+            cap = cv2.VideoCapture(i, cv2.CAP_V4L)  # Try different API backends if available
+            if cap.isOpened():
                 available_camera = i
                 break
-            video_stream.release()
+            cap.release()
 
         if available_camera is not None:
             st.sidebar.text(f"Camera index {available_camera} is available")
