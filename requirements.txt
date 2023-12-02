@@ -1,0 +1,7 @@
+# setup.sh
+
+# Command to update pip (optional but sometimes recommended)
+pip install --upgrade pip
+
+# Any additional setup or configurations needed before running your Streamlit app
+# For example, setting environment variables or installing specific packages
