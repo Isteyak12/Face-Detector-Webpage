@@ -29,17 +29,30 @@ def main():
 
     elif detection_method == "Live Video":
         st.sidebar.subheader("Live Video Face Detection")
-        video_stream = cv2.VideoCapture(0)
-        stframe = st.empty()
-
-        while True:
-            ret, frame = video_stream.read()
-            if not ret:
-                st.error("Failed to access the camera.")
+        available_camera = None
+        # Try different camera indices to identify the available one
+        for i in range(4):
+            video_stream = cv2.VideoCapture(i)
+            if video_stream.isOpened():
+                available_camera = i
                 break
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            result_img = detect_faces(frame)
-            stframe.image(result_img, caption='Live Video Face Detection', channels="RGB", use_column_width=True)
+            video_stream.release()
+
+        if available_camera is not None:
+            st.sidebar.text(f"Camera index {available_camera} is available")
+            video_stream = cv2.VideoCapture(available_camera)
+            stframe = st.empty()
+
+            while True:
+                ret, frame = video_stream.read()
+                if not ret:
+                    st.error("Failed to access the camera.")
+                    break
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                result_img = detect_faces(frame)
+                stframe.image(result_img, caption='Live Video Face Detection', channels="RGB", use_column_width=True)
+        else:
+            st.error("No available camera found.")
 
 if __name__ == '__main__':
     main()
